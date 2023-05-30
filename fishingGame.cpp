@@ -7,7 +7,8 @@ using namespace std;
 
 struct player
 {
-    int xp;
+    string name;
+    int XP;
     int level;
     int luck;
     int money;
@@ -16,7 +17,7 @@ struct player
 struct fish
 {
     string name;
-    int xp;
+    int gainXP;
     int price;
 };
 
