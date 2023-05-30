@@ -13,6 +13,13 @@ struct player
     int money;
 };
 
+struct fish
+{
+    string name;
+    int xp;
+    int price;
+};
+
 void memancing();
 int getFish(int playerLevel);
 
