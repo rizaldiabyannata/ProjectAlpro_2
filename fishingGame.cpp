@@ -5,7 +5,7 @@
 
 using namespace std;
 
-struct player
+struct playerAtribut
 {
     string name;
     int XP;
@@ -24,6 +24,8 @@ struct fish
 void memancing();
 int getFish(int playerLevel);
 
+playerAtribut Player;
+
 int main()
 {
     int selected = 1, input;
@@ -37,18 +39,18 @@ int main()
         {
         case 1:
             cout << "\t>>>   Mancing   <<<\n"
-                 << "\t     Inventory   \n"
-                 << "\t       Shope   \n";
+                 << "\t       Shope   \n"
+                 << "\t       Exit        \n";
             break;
         case 2:
             cout << "\t      Mancing      \n"
-                 << "\t>>>  Inventory  <<<\n"
-                 << "\t       Shope   \n";
+                 << "\t>>>    Shope    <<<\n"
+                 << "\t       Exit        \n";
             break;
         case 3:
             cout << "\t      Mancing      \n"
-                 << "\t     Inventory   \n"
-                 << "\t>>>    Shope    <<<\n";
+                 << "\t       Shope       \n"
+                 << "\t>>>    Exit     <<<\n";
             break;
         }
         input = getch();
@@ -86,6 +88,17 @@ int main()
         break;
 
     case 3:
+        char input;
+        cout << "Yakin Mau Keluar [Y/N] = ";
+        cin >> input;
+        if (input == 'Y' || input == 'y')
+        {
+            return 0;
+        }
+        else if (input == 'N' || input == 'n')
+        {
+            main();
+        }
         break;
     }
     system("pause");
@@ -111,17 +124,17 @@ void memancing()
             {
             case 1:
                 cout << "(PANCING)    "
-                     << "    SHOPE    "
-                     << "    KE MENU    \n";
+                     << "     SHOPE     "
+                     << "     KE MENU     \n";
                 break;
             case 2:
-                cout << "PANCING    "
+                cout << "PANCING      "
                      << "    (SHOPE)    "
-                     << "    KE MENU    \n";
+                     << "     KE MENU     \n";
                 break;
             case 3:
-                cout << "PANCING    "
-                     << "    SHOPE    "
+                cout << "PANCING      "
+                     << "     SHOPE     "
                      << "    (KE MENU)    \n";
                 break;
             }
