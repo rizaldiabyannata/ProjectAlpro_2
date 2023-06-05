@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cstdlib>
-#include <ctime>
 
 using namespace std;
 
@@ -32,7 +31,6 @@ void clearInputBuffer()
 
 Item spinMagicWheel()
 {
-    srand(time(0));
 
     int totalRarity = 0;
     for (int i = 0; i < totalItems; i++)

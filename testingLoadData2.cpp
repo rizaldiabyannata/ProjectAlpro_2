@@ -27,11 +27,11 @@ int main()
             int umur;
 
             // Mencari posisi spasi pertama
-            size_t pos1 = line.find(' ');
+            size_t pos1 = line.find(',');
             nama = line.substr(0, pos1);
 
             // Mencari posisi spasi kedua
-            size_t pos2 = line.find(' ', pos1 + 1);
+            size_t pos2 = line.find(',', pos1 + 1);
             string umurStr = line.substr(pos1 + 1, pos2 - pos1 - 1);
             umur = stoi(umurStr);
 
