@@ -4,9 +4,10 @@
 Fishing Game adalah proyek praktikum matakuliah Algoritma Pemrograman Dasar. Proyek ini merupakan sebuah permainan simulasi memancing yang dibangun menggunakan bahasa pemrograman C++. Pemain dapat memancing ikan, mengumpulkan berbagai jenis ikan, dan menjualnya untuk mendapatkan uang.
 
 ## Kontributor
-- [Nama Kontributor 1](https://github.com/kontributor1)
-- [Nama Kontributor 2](https://github.com/kontributor2)
-- [Nama Kontributor 3](https://github.com/kontributor3)
+RIZALDI ABYANNATA [F1D022158]
+IDA AYU RAVIKAN VARAPANNA PUTRA [F1D022051]
+QHAULAN SYAQHILA [F1D022152]
+M. ALFIN NASHIRUL HAQ [F1D022131]
 
 ## Fitur
 - Mancing ikan dengan menggunakan perintah khusus.
