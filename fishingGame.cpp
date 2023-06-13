@@ -1,7 +1,7 @@
 #include <iostream>
-#include <string>
 #include <fstream>
 #include <conio.h>
+#include <iomanip>
 
 using namespace std;
 
@@ -108,6 +108,11 @@ int main()
         {
             displayInventory();
         }
+        else if (input == 'm')
+        {
+            cout << player.money << endl;
+            system("pause");
+        }
     }
     switch (selected)
     {
@@ -116,6 +121,7 @@ int main()
         break;
 
     case 2:
+        displayInventory();
         break;
 
     case 3:
@@ -170,26 +176,90 @@ void loadDataFish()
 
 void displayInventory()
 {
-    cout << "Inventory Ikan:\n";
-    if (player.inventory == nullptr)
+    int selected = 1, input;
+    while (true)
     {
-        cout << "Tidak ada ikan dalam inventory.\n";
-    }
+        while (true)
+        {
+            system("cls");
+            Fish *current = player.inventory;
+            cout << "Inventory Ikan:\n";
+            if (player.inventory == nullptr)
+            {
+                cout << "Tidak ada ikan dalam inventory.\n";
+            }
+            else
+            {
+                cout << setw(4) << "No." << setw(15) << "Nama" << setw(10) << "Berat" << setw(10) << "Harga" << endl;
+                cout << "------------------------------------------------------\n";
 
-    int count = 1;
-    Fish *current = player.inventory;
-    while (current != nullptr)
-    {
-        cout << count << ". Nama: " << current->name << "\n";
-        cout << "   Berat: " << current->weight << " lbs\n";
-        cout << "   Kelangkaan: " << current->rarity << "\n";
-        cout << "   Harga: $" << current->price << "\n";
-        cout << "-----------------\n";
+                int count = 1;
+                while (current != nullptr)
+                {
+                    cout << setw(4) << count << setw(15) << current->name << setw(10) << current->weight << setw(7) << "Rp" << current->price << endl;
+                    current = current->next;
+                    count++;
+                }
+            }
+            cout << endl;
+            switch (selected)
+            {
+            case 1:
+                cout << "(Jual Semua)" << setw(15) << " Kembali ";
+                break;
 
-        current = current->next;
-        count++;
+            case 2:
+                cout << " Jual Semua " << setw(15) << "(Kembali)";
+                break;
+            }
+            input = getch();
+            switch (input)
+            {
+            case 77:
+                selected++;
+                if (selected > 2)
+                {
+                    selected = 1;
+                }
+                break;
+
+            case 75:
+                selected--;
+                if (selected < 1)
+                {
+                    selected = 2;
+                }
+                break;
+            }
+            if (input == 13)
+            {
+                break;
+            }
+        }
+        switch (selected)
+        {
+        case 1:
+        {
+            Fish *current = player.inventory;
+            while (current != nullptr)
+            {
+                player.money += current->price;
+                Fish *temp = current;
+                current = current->next;
+                delete temp;
+            }
+            player.inventory = nullptr;
+            system("cls");
+            cout << "Anda Telah Menjual Semua Ikan\nUang Anda Sekarang Rp" << player.money << endl;
+            system("pause");
+            main();
+        }
+        break;
+        case 2:
+            main();
+            break;
+        }
     }
-    system("pause");
 }
 
 void fishing()
