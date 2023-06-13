@@ -48,7 +48,7 @@ void SaveProgressToFile(const std::string &encryptedData)
     }
     else
     {
-        std::cout << "Gagal membuka berkas untuk penyimpanan progres." << std::endl;
+        std::cout << "Gagal menyimpanan progres." << std::endl;
     }
 }
 

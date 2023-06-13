@@ -57,16 +57,25 @@ int main()
         {
         case 1:
             cout << "\t>>>   Mancing   <<<\n"
+                 << "\t     Inventory      \n"
                  << "\t       Shope       \n"
                  << "\t       Exit        \n";
             break;
         case 2:
             cout << "\t      Mancing      \n"
-                 << "\t>>>    Shope    <<<\n"
+                 << "\t>>>  Inventory  <<<\n"
+                 << "\t       Shope       \n"
                  << "\t       Exit        \n";
             break;
         case 3:
             cout << "\t      Mancing      \n"
+                 << "\t     Inventory     \n"
+                 << "\t>>>    Shope    <<<\n"
+                 << "\t       Exit        \n";
+            break;
+        case 4:
+            cout << "\t      Mancing      \n"
+                 << "\t     Inventory     \n"
                  << "\t       Shope       \n"
                  << "\t>>>    Exit     <<<\n";
             break;
@@ -110,6 +119,8 @@ int main()
         break;
 
     case 3:
+        break;
+    case 4:
         char input;
         cout << "Yakin Mau Keluar [Y/N] = ";
         cin >> input;
@@ -125,54 +136,6 @@ int main()
     }
     system("pause");
     return 0;
-}
-
-void addFishToInventory(Player &player, string fishName, float fishWeight, int fishRarity, int fishPrice)
-{
-    Fish *newFish = new Fish;
-    newFish->name = fishName;
-    newFish->weight = fishWeight;
-    newFish->rarity = fishRarity;
-    newFish->price = fishPrice;
-    newFish->next = nullptr;
-
-    if (player.inventory == nullptr)
-    {
-        player.inventory = newFish;
-    }
-    else
-    {
-        Fish *current = player.inventory;
-        while (current->next != nullptr)
-        {
-            current = current->next;
-        }
-        current->next = newFish;
-    }
-}
-
-void displayInventory()
-{
-    cout << "Inventory Ikan:\n";
-    if (player.inventory == nullptr)
-    {
-        cout << "Tidak ada ikan dalam inventory.\n";
-    }
-
-    int count = 1;
-    Fish *current = player.inventory;
-    while (current != nullptr)
-    {
-        cout << count << ". Nama: " << current->name << "\n";
-        cout << "   Berat: " << current->weight << " lbs\n";
-        cout << "   Kelangkaan: " << current->rarity << "\n";
-        cout << "   Harga: $" << current->price << "\n";
-        cout << "-----------------\n";
-
-        current = current->next;
-        count++;
-    }
-    system("pause");
 }
 
 void loadDataFish()
@@ -205,32 +168,28 @@ void loadDataFish()
     }
 }
 
-Fish luckGetFish()
+void displayInventory()
 {
-    srand(time(0));
-    int maxRarity = 0;
-    for (int i = 0; i < 30; i++)
+    cout << "Inventory Ikan:\n";
+    if (player.inventory == nullptr)
     {
-        if (FishesData[i].rarity > maxRarity)
-        {
-            maxRarity = FishesData[i].rarity;
-        }
+        cout << "Tidak ada ikan dalam inventory.\n";
     }
 
-    int fishIndex = -1;
-    while (fishIndex == -1)
+    int count = 1;
+    Fish *current = player.inventory;
+    while (current != nullptr)
     {
-        int randomIndex = rand() % 30;
-        int rarityDifference = maxRarity - FishesData[randomIndex].rarity;
-        int randomValue = rand() % maxRarity;
-        if (randomValue >= rarityDifference)
-        {
-            fishIndex = randomIndex;
-        }
-    }
+        cout << count << ". Nama: " << current->name << "\n";
+        cout << "   Berat: " << current->weight << " lbs\n";
+        cout << "   Kelangkaan: " << current->rarity << "\n";
+        cout << "   Harga: $" << current->price << "\n";
+        cout << "-----------------\n";
 
-    addFishToInventory(player, FishesData[fishIndex].name, FishesData[fishIndex].weight, FishesData[fishIndex].rarity, FishesData[fishIndex].price);
-    return FishesData[fishIndex];
+        current = current->next;
+        count++;
+    }
+    system("pause");
 }
 
 void fishing()
@@ -247,6 +206,7 @@ void fishing()
                 system("cls");
                 cout << pesan << endl;
                 cout << "tekan Enter untuk keluar\n";
+                levelup = false;
                 system("pause");
             }
             system("cls");
@@ -318,6 +278,58 @@ void fishing()
             main();
             break;
         }
+    }
+}
+
+Fish luckGetFish()
+{
+    srand(time(0));
+    int maxRarity = 0;
+    for (int i = 0; i < 30; i++)
+    {
+        if (FishesData[i].rarity > maxRarity)
+        {
+            maxRarity = FishesData[i].rarity;
+        }
+    }
+
+    int fishIndex = -1;
+    while (fishIndex == -1)
+    {
+        int randomIndex = rand() % 30;
+        int rarityDifference = maxRarity - FishesData[randomIndex].rarity;
+        int randomValue = rand() % maxRarity;
+        if (randomValue >= rarityDifference)
+        {
+            fishIndex = randomIndex;
+        }
+    }
+
+    addFishToInventory(player, FishesData[fishIndex].name, FishesData[fishIndex].weight, FishesData[fishIndex].rarity, FishesData[fishIndex].price);
+    return FishesData[fishIndex];
+}
+
+void addFishToInventory(Player &player, string fishName, float fishWeight, int fishRarity, int fishPrice)
+{
+    Fish *newFish = new Fish;
+    newFish->name = fishName;
+    newFish->weight = fishWeight;
+    newFish->rarity = fishRarity;
+    newFish->price = fishPrice;
+    newFish->next = nullptr;
+
+    if (player.inventory == nullptr)
+    {
+        player.inventory = newFish;
+    }
+    else
+    {
+        Fish *current = player.inventory;
+        while (current->next != nullptr)
+        {
+            current = current->next;
+        }
+        current->next = newFish;
     }
 }
 
