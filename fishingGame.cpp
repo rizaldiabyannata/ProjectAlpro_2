@@ -10,7 +10,7 @@ const int MAX_LEVEL = 10;
 struct Fish
 {
     string name;
-    double weight;
+    float weight;
     int rarity;
     int price;
     Fish *next;
@@ -22,7 +22,8 @@ struct Player
     int XP;
     int level;
     int money;
-    string item[3];
+    int numOfbait;
+    int itemLevel[2];
     Fish *inventory;
     int xpNeededToUp[MAX_LEVEL + 1] = {0, 100, 200, 400, 650, 800, 1000, 1300, 1550, 1750, 2000};
 };
@@ -30,22 +31,36 @@ struct Player
 Fish FishesData[30];
 Player player;
 string pesan;
-bool levelup = false;
+bool levelup = false, registed;
 
 void addFishToInventory(Player &player, string fishName, float fishWeight, int fishRarity, int fishPrice);
 void displayInventory();
 void loadDataFish();
-Fish luckGetFish();
+Fish luckGetFish(int level);
 void fishing();
 void levelUp(Player &player);
+void shop();
+void sortFishNames(Fish *head);
+void loadGame();
+void lihatDataIkan();
+void saveGame(const Player &player);
 
 int main()
 {
+    loadGame();
     loadDataFish();
-    player.name = "John Doe";
-    player.XP = 0;
-    player.level = 1;
-    player.money = 1000;
+    if (!registed)
+    {
+        player.level = 1;
+        player.money = 1000;
+        player.numOfbait = 10;
+        player.itemLevel[0] = 1;
+        player.itemLevel[1] = 1;
+        player.XP = 0;
+        cout << "Selamat Datang\nSilahkan Masukkan Nickname Anda = ";
+        cin >> player.name;
+        registed = true;
+    }
     int selected = 1, input;
     while (true)
     {
@@ -86,7 +101,7 @@ int main()
         case 80:
         {
             selected++;
-            if (selected > 3)
+            if (selected > 4)
             {
                 selected = 1;
             }
@@ -96,7 +111,7 @@ int main()
             selected--;
             if (selected < 1)
             {
-                selected = 3;
+                selected = 4;
             }
             break;
         }
@@ -104,14 +119,14 @@ int main()
         {
             break;
         }
-        else if (input == 'i')
-        {
-            displayInventory();
-        }
         else if (input == 'm')
         {
             cout << player.money << endl;
             system("pause");
+        }
+        else if (input == 'i')
+        {
+            lihatDataIkan();
         }
     }
     switch (selected)
@@ -125,23 +140,18 @@ int main()
         break;
 
     case 3:
+        shop();
         break;
     case 4:
-        char input;
-        cout << "Yakin Mau Keluar [Y/N] = ";
-        cin >> input;
-        if (input == 'Y' || input == 'y')
+        cout << "Apakah Anda Yakin Ingin Keluar [Y/N] = ";
+        char exitInput;
+        cin >> exitInput;
+        if (exitInput == 'y' || exitInput == 'Y')
         {
-            return 0;
+            saveGame(player);
+            exit(0);
         }
-        else if (input == 'N' || input == 'n')
-        {
-            main();
-        }
-        break;
     }
-    system("pause");
-    return 0;
 }
 
 void loadDataFish()
@@ -163,7 +173,7 @@ void loadDataFish()
             pos = line.find(',');
             FishesData[index].price = stoi(line.substr(0, pos));
             line.erase(0, pos + 1);
-            FishesData[index].weight = stod(line);
+            FishesData[index].weight = stof(line);
             index++;
         }
         fileFish.close();
@@ -190,15 +200,31 @@ void displayInventory()
             }
             else
             {
-                cout << setw(4) << "No." << setw(15) << "Nama" << setw(10) << "Berat" << setw(10) << "Harga" << endl;
+                sortFishNames(current);
+                cout << setw(4) << "No." << setw(15) << "Nama" << setw(10) << "Berat" << setw(10) << "Jumlah" << setw(10) << "Harga" << endl;
                 cout << "------------------------------------------------------\n";
 
                 int count = 1;
+                string nameFish;
                 while (current != nullptr)
                 {
-                    cout << setw(4) << count << setw(15) << current->name << setw(10) << current->weight << setw(7) << "Rp" << current->price << endl;
+                    int jumlah = 1;
+                    Fish *temp = current->next;
+                    while (temp != nullptr)
+                    {
+                        if (temp->name == current->name)
+                        {
+                            jumlah++;
+                        }
+                        temp = temp->next;
+                    }
+                    if (current->name != nameFish)
+                    {
+                        cout << setw(4) << count << setw(15) << current->name << setw(10) << current->weight << setw(10) << jumlah << setw(7) << "Rp" << current->price * jumlah << endl;
+                        count++;
+                    }
+                    nameFish = current->name;
                     current = current->next;
-                    count++;
                 }
             }
             cout << endl;
@@ -252,10 +278,12 @@ void displayInventory()
             system("cls");
             cout << "Anda Telah Menjual Semua Ikan\nUang Anda Sekarang Rp" << player.money << endl;
             system("pause");
+            saveGame(player);
             main();
         }
         break;
         case 2:
+            saveGame(player);
             main();
             break;
         }
@@ -266,7 +294,7 @@ void fishing()
 {
     int selected = 1, input;
     int fishCount = 0;
-    Fish selectedItem;
+    Fish selecteditemLevel;
     while (true)
     {
         while (true)
@@ -284,11 +312,20 @@ void fishing()
                  << "=============== Memancing ==============\n"
                  << "========================================\n"
                  << "Money : " << player.money << "  Xp : " << player.XP << " Level : " << player.level << endl;
-            if (selectedItem.name != "\0")
+            if (selecteditemLevel.name != "\0")
             {
-                cout << "Get " << selectedItem.name << " (" << selectedItem.weight << " lbs)"
-                     << "\nPrice : " << selectedItem.price << "\nGain " << selectedItem.price / 1000 << "Xp" << endl;
-                player.XP += selectedItem.price / 1000;
+                cout << "Get " << selecteditemLevel.name << " (" << selecteditemLevel.weight << " lbs)"
+                     << "\nPrice : " << selecteditemLevel.price << endl;
+                if (selecteditemLevel.price / 1000 == 0)
+                {
+                    player.XP += 1;
+                    cout << "Gain " << 1 << "XP" << endl;
+                }
+                else
+                {
+                    player.XP += selecteditemLevel.price / 1000;
+                    cout << "Gain " << selecteditemLevel.price / 1000 << "XP" << endl;
+                }
             }
             cout << endl;
             switch (selected)
@@ -337,37 +374,51 @@ void fishing()
         switch (selected)
         {
         case 1:
-            selectedItem = luckGetFish();
+            selecteditemLevel = luckGetFish(player.level);
             levelUp(player);
             break;
 
         case 2:
+            shop();
             break;
 
         case 3:
+            saveGame(player);
             main();
             break;
         }
     }
 }
 
-Fish luckGetFish()
+Fish luckGetFish(int level)
 {
     srand(time(0));
+    int minIndex = level - 1;
+    int maxIndex = level + 4;
+    if (minIndex < 0)
+    {
+        minIndex = 0;
+    }
+    if (maxIndex >= 30)
+    {
+        maxIndex = 29;
+    }
+
     int maxRarity = 0;
-    for (int i = 0; i < 30; i++)
+    for (int i = minIndex; i <= maxIndex; i++)
     {
         if (FishesData[i].rarity > maxRarity)
         {
-            maxRarity = FishesData[i].rarity;
+            maxRarity = FishesData[i].rarity + player.itemLevel[0] * 10 + player.itemLevel[1] * 5;
         }
     }
 
     int fishIndex = -1;
     while (fishIndex == -1)
     {
-        int randomIndex = rand() % 30;
+        int randomIndex = rand() % (maxIndex - minIndex + 1) + minIndex;
         int rarityDifference = maxRarity - FishesData[randomIndex].rarity;
+
         int randomValue = rand() % maxRarity;
         if (randomValue >= rarityDifference)
         {
@@ -418,4 +469,224 @@ void levelUp(Player &player)
 
         pesan = "Selamat! Level Anda telah naik menjadi " + to_string(player.level) + "!\n" + "Kamu Mendapatkan Rp" + to_string(player.level * 1000) + "\n";
     }
+}
+
+void shop()
+{
+    int selected = 1, input;
+    while (true)
+    {
+        while (true)
+        {
+            system("cls");
+            cout << "Shope\n";
+            switch (selected)
+            {
+            case 1:
+                cout << "> Beli/Menaikkan Level Pancingan\n";
+                cout << "  Beli/Menaikkan Level Umpan\n";
+                cout << "  Kembali\n";
+                break;
+
+            case 2:
+                cout << "  Beli/Menaikkan Level Pancingan\n";
+                cout << "> Beli/Menaikkan Level Umpan\n";
+                cout << "  Kembali\n";
+                break;
+
+            case 3:
+                cout << "  Beli/Menaikkan Level Pancingan\n";
+                cout << "  Beli/Menaikkan Level Umpan\n";
+                cout << "> Kembali\n";
+                break;
+            }
+
+            input = getch();
+            switch (input)
+            {
+            case 72:
+                selected--;
+                if (selected < 1)
+                {
+                    selected = 3;
+                }
+                break;
+
+            case 80:
+                selected++;
+                if (selected > 3)
+                {
+                    selected = 1;
+                }
+                break;
+            }
+
+            if (input == 13)
+            {
+                break;
+            }
+        }
+
+        switch (selected)
+        {
+        case 1:
+            if (player.money >= player.itemLevel[0] * 20000)
+            {
+                player.money -= player.itemLevel[0];
+                player.itemLevel[0]++;
+                cout << "Pancingan berhasil ditingkatkan menjadi level " << player.itemLevel[0] << endl;
+            }
+            else
+            {
+                cout << "Maaf, uang Anda tidak mencukupi untuk membeli pancingan." << endl;
+            }
+            system("pause");
+            break;
+
+        case 2:
+            if (player.money >= player.itemLevel[1] * 10000)
+            {
+                player.money -= player.itemLevel[1] * 10000;
+                player.itemLevel[1]++;
+                cout << "Umpan berhasil ditingkatkan menjadi level " << player.itemLevel[1] << endl;
+            }
+            else
+            {
+                cout << "Maaf, uang Anda tidak mencukupi untuk membeli umpan." << endl;
+            }
+            system("pause");
+            break;
+
+        case 3:
+            saveGame(player);
+            main();
+        }
+    }
+}
+
+void sortFishNames(Fish *head)
+{
+    if (head == nullptr || head->next == nullptr)
+    {
+        return;
+    }
+
+    bool swapped;
+    Fish *current;
+    Fish *last = nullptr;
+
+    do
+    {
+        swapped = false;
+        current = head;
+
+        while (current->next != last)
+        {
+            if (current->name > current->next->name)
+            {
+                swap(current->name, current->next->name);
+                swapped = true;
+            }
+            current = current->next;
+        }
+        last = current;
+    } while (swapped);
+}
+
+void saveGame(const Player &player)
+{
+    remove("savegame.txt");
+    ofstream file("savegame.txt");
+
+    if (file.is_open())
+    {
+        file << player.name << endl;
+        file << player.XP << endl;
+        file << player.level << endl;
+        file << player.money << endl;
+        file << player.itemLevel[0] << endl;
+        file << player.itemLevel[1] << endl;
+
+        // Menulis data inventory ikan ke dalam file
+        Fish *current = player.inventory;
+        while (current != nullptr)
+        {
+            file << current->name << ",";
+            file << current->weight << ",";
+            file << current->rarity << ",";
+            file << current->price << endl;
+            current = current->next;
+        }
+
+        file.close();
+        cout << "Progres permainan berhasil disimpan." << endl;
+    }
+    else
+    {
+        cout << "Gagal menyimpan progres permainan." << endl;
+    }
+}
+
+void loadGame()
+{
+    ifstream file("savegame.txt");
+
+    if (file.is_open())
+    {
+        string line;
+
+        getline(file, line);
+        player.name = line;
+        getline(file, line);
+        player.XP = stoi(line);
+        getline(file, line);
+        player.level = stoi(line);
+        getline(file, line);
+        player.money = stoi(line);
+        getline(file, line);
+        player.itemLevel[0] = stoi(line);
+        getline(file, line);
+        player.itemLevel[1] = stoi(line);
+
+        while (getline(file, line))
+        {
+            stringstream ss(line);
+            string fishName;
+            float fishWeight;
+            int fishRarity, fishPrice;
+
+            getline(ss, fishName, ',');
+            ss >> fishWeight;
+            ss.ignore();
+            ss >> fishRarity;
+            ss.ignore();
+            ss >> fishPrice;
+
+            addFishToInventory(player, fishName, fishWeight, fishRarity, fishPrice);
+        }
+
+        file.close();
+        cout << "Progres permainan berhasil dimuat." << endl;
+        registed = true;
+    }
+    else
+    {
+        cout << "Gagal memuat progres permainan." << endl;
+        registed = false;
+    }
+}
+
+void lihatDataIkan()
+{
+    system("cls");
+    cout << "Data Ikan:\n";
+    cout << setw(4) << "No." << setw(15) << "Nama" << setw(10) << "Berat" << setw(10) << "Rarity" << setw(10) << "Harga" << endl;
+    cout << "------------------------------------------------------\n";
+
+    for (int i = 0; i < 30; i++)
+    {
+        cout << setw(4) << (i + 1) << setw(15) << FishesData[i].name << setw(10) << FishesData[i].weight << setw(10) << FishesData[i].rarity << setw(7) << "Rp" << FishesData[i].price << endl;
+    }
+
+    system("pause");
 }
