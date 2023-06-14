@@ -19,4 +19,4 @@ Fishing Game adalah proyek praktikum matakuliah Algoritma Pemrograman Dasar. Pro
 ## Catatan
 - Proyek ini dibuat sebagai tugas praktikum untuk matakuliah Algoritma Pemrograman Dasar.
 - Proyek ini tidak menggunakan library grafis eksternal, dan dirancang untuk menjalankan di lingkungan konsol/terminal.
-- Proyek ini hanya mendukung sistem operasi tertentu (misalnya, Windows, Linux) dan membutuhkan kompiler C++ yang kompatibel.
+- Proyek ini hanya mendukung sistem operasi tertentu (misalnya, Windows, Linux) dan membutuhkan kompiler C++ (MinGW 12.2.0).
