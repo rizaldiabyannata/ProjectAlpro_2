@@ -308,23 +308,30 @@ void fishing()
                 system("pause");
             }
             system("cls");
-            cout << "========================================\n"
-                 << "=============== Memancing ==============\n"
-                 << "========================================\n"
-                 << "Money : " << player.money << "  Xp : " << player.XP << " Level : " << player.level << endl;
-            if (selecteditemLevel.name != "\0")
+            cout << "==========================================\n"
+                 << "================ Memancing ===============\n"
+                 << "==========================================\n"
+                 << "Money : " << player.money << "  Xp : " << player.XP << " Level : " << player.level << " Umpan : " << player.numOfbait << endl;
+            if (player.numOfbait == 0)
             {
-                cout << "Get " << selecteditemLevel.name << " (" << selecteditemLevel.weight << " lbs)"
-                     << "\nPrice : " << selecteditemLevel.price << endl;
-                if (selecteditemLevel.price / 1000 == 0)
+                cout << "\n   \tKehabisan Umpan\n";
+            }
+            else
+            {
+                if (selecteditemLevel.name != "\0")
                 {
-                    player.XP += 1;
-                    cout << "Gain " << 1 << "XP" << endl;
-                }
-                else
-                {
-                    player.XP += selecteditemLevel.price / 1000;
-                    cout << "Gain " << selecteditemLevel.price / 1000 << "XP" << endl;
+                    cout << "Get " << selecteditemLevel.name << " (" << selecteditemLevel.weight << " lbs)"
+                         << "\nPrice : " << selecteditemLevel.price << endl;
+                    if (selecteditemLevel.price / 1000 == 0)
+                    {
+                        player.XP += 1;
+                        cout << "Gain " << 1 << "XP" << endl;
+                    }
+                    else
+                    {
+                        player.XP += selecteditemLevel.price / 1000;
+                        cout << "Gain " << selecteditemLevel.price / 1000 << "XP" << endl;
+                    }
                 }
             }
             cout << endl;
@@ -374,8 +381,12 @@ void fishing()
         switch (selected)
         {
         case 1:
-            selecteditemLevel = luckGetFish(player.level);
-            levelUp(player);
+            if (player.numOfbait > 0)
+            {
+                player.numOfbait--;
+                selecteditemLevel = luckGetFish(player.level);
+                levelUp(player);
+            }
             break;
 
         case 2:
@@ -479,25 +490,34 @@ void shop()
         while (true)
         {
             system("cls");
-            cout << "Shope\n";
+            cout << "Shope\t\tRp" << player.money << endl;
             switch (selected)
             {
             case 1:
-                cout << "> Beli/Menaikkan Level Pancingan\n";
-                cout << "  Beli/Menaikkan Level Umpan\n";
-                cout << "  Kembali\n";
+                cout << "> Menaikkan Level Pancingan\tRp" << player.itemLevel[0] * 50000
+                     << "\n  Menaikkan Level Umpan\t\tRp" << player.itemLevel[1] * 10000
+                     << "\n  Beli Umpan (10pcs)\t\tRp" << player.itemLevel[1] * 2500
+                     << "\n  Kembali\n";
                 break;
 
             case 2:
-                cout << "  Beli/Menaikkan Level Pancingan\n";
-                cout << "> Beli/Menaikkan Level Umpan\n";
-                cout << "  Kembali\n";
+                cout << "  Menaikkan Level Pancingan\tRp" << player.itemLevel[0] * 25000
+                     << "\n> Menaikkan Level Umpan\t\tRp" << player.itemLevel[1] * 10000
+                     << "\n  Beli Umpan (10pcs)\t\tRp" << player.itemLevel[1] * 2500
+                     << "\n  Kembali\n";
                 break;
 
             case 3:
-                cout << "  Beli/Menaikkan Level Pancingan\n";
-                cout << "  Beli/Menaikkan Level Umpan\n";
-                cout << "> Kembali\n";
+                cout << "  Menaikkan Level Pancingan\tRp" << player.itemLevel[0] * 25000
+                     << "\n  Menaikkan Level Umpan\t\tRp" << player.itemLevel[1] * 10000
+                     << "\n> Beli Umpan (10pcs)\t\tRp" << player.itemLevel[1] * 2500
+                     << "\n  Kembali\n";
+                break;
+            case 4:
+                cout << "  Menaikkan Level Pancingan\tRp" << player.itemLevel[0] * 25000
+                     << "\n  Menaikkan Level Umpan\t\tRp" << player.itemLevel[1] * 10000
+                     << "\n  Beli Umpan (10pcs)\t\tRp" << player.itemLevel[1] * 2500
+                     << "\n> Kembali\n";
                 break;
             }
 
@@ -508,13 +528,13 @@ void shop()
                 selected--;
                 if (selected < 1)
                 {
-                    selected = 3;
+                    selected = 4;
                 }
                 break;
 
             case 80:
                 selected++;
-                if (selected > 3)
+                if (selected > 4)
                 {
                     selected = 1;
                 }
@@ -530,7 +550,7 @@ void shop()
         switch (selected)
         {
         case 1:
-            if (player.money >= player.itemLevel[0] * 20000)
+            if (player.money >= player.itemLevel[0] * 25000)
             {
                 player.money -= player.itemLevel[0];
                 player.itemLevel[0]++;
@@ -538,7 +558,7 @@ void shop()
             }
             else
             {
-                cout << "Maaf, uang Anda tidak mencukupi untuk membeli pancingan." << endl;
+                cout << "Maaf, uang Anda tidak mencukupi untuk menaikkan level pancingan." << endl;
             }
             system("pause");
             break;
@@ -552,12 +572,25 @@ void shop()
             }
             else
             {
+                cout << "Maaf, uang Anda tidak mencukupi untuk menaikkan level umpan." << endl;
+            }
+            system("pause");
+            break;
+        case 3:
+            if (player.money >= player.itemLevel[1] * 2500)
+            {
+                player.numOfbait += 10;
+                player.money -= player.itemLevel[1] * 2500;
+                cout << "Umpan berhasil dibeli dengan level " << player.itemLevel[1] << " sebanyak 10pcs" << endl;
+            }
+            else
+            {
+
                 cout << "Maaf, uang Anda tidak mencukupi untuk membeli umpan." << endl;
             }
             system("pause");
             break;
-
-        case 3:
+        case 4:
             saveGame(player);
             main();
         }
@@ -634,7 +667,6 @@ void loadGame()
     if (file.is_open())
     {
         string line;
-
         getline(file, line);
         player.name = line;
         getline(file, line);
@@ -654,14 +686,12 @@ void loadGame()
             string fishName;
             float fishWeight;
             int fishRarity, fishPrice;
-
             getline(ss, fishName, ',');
             ss >> fishWeight;
             ss.ignore();
             ss >> fishRarity;
             ss.ignore();
             ss >> fishPrice;
-
             addFishToInventory(player, fishName, fishWeight, fishRarity, fishPrice);
         }
 
