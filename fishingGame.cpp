@@ -23,19 +23,7 @@ struct Player {
   int numOfbait;
   int itemLevel[2];
   Fish * inventory;
-  int xpNeededToUp[MAX_LEVEL + 1] = {
-    0,
-    100,
-    200,
-    400,
-    650,
-    800,
-    1000,
-    1300,
-    1550,
-    1750,
-    2000
-  };
+  int xpNeededToUp[MAX_LEVEL + 1] = {0,100,200,400,650,800,1000,1300,1550,1750,2000};
 };
 
 Fish FishesData[30];
